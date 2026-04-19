@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حساب الميراث الإسلامي - د. مازن بدوي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap');
+        
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            min-height: 100vh;
+            padding-bottom: 60px;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* حركات التدرج اللوني */
+        .bg-animated-gradient {
+            background: linear-gradient(270deg, #3b82f6, #14b8a6, #22c55e, #3b82f6);
+            background-size: 300% 300%;
+            animation: gradient-shift 4s ease infinite;
+        }
+
+        .bg-animated-footer {
+            background: linear-gradient(270deg, #1e3a8a, #7e22ce, #2563eb, #1e3a8a);
+            background-size: 300% 300%;
+            animation: gradient-shift 5s linear infinite;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .card-hover:hover {
+            transform: scale(1.01);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+
+        th, td { font-size: 1.15rem; }
+
+        /* الفوتر الثابت */
+        .dr-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            color: white;
+            text-align: center;
+            padding: 8px 0;
+            font-weight: bold;
+            font-size: 1.1rem;
+            z-index: 1000;
+            letter-spacing: 1px;
+        }
+
+        /* تنسيق التبويبات */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-btn {
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background: linear-gradient(270deg, #3b82f6, #14b8a6);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .tab-btn.inactive {
+            background: white;
+            color: #4b5563;
+            border: 2px solid #e5e7eb;
+        }
+        .tab-btn.inactive:hover {
+            background: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        
+        <!-- عنوان البرنامج -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-5xl font-light text-blue-900 mb-3 tracking-wide">
+                ⚖️ برنامج حساب الميراث (المناسخات)
+            </h1>
+            <p class="text-xl font-bold text-blue-700">توزيع تركة الوالد، ثم تركة الابن المتوفى (محمد)</p>
+        </div>
+
+        <!-- قسم إدخال قيمة التركة -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 flex flex-col md:flex-row items-center justify-center gap-6 card-hover">
+            <label for="estateValue" class="text-2xl font-bold text-gray-700">المبلغ المراد توزيعه :</label>
+            <input type="number" id="estateValue" value="100000" min="0" step="1000" oninput="calculateShares()"
+                class="text-2xl font-bold text-center border-2 border-blue-300 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 w-full md:w-64 transition-all">
+        </div>
+
+        <!-- أزرار التبويبات -->
+        <div class="flex flex-col md:flex-row justify-center gap-4 mb-6">
+            <button onclick="switchTab('tab1')" id="btn-tab1" class="tab-btn active text-xl font-bold px-8 py-3 rounded-xl flex items-center justify-center gap-2 w-full md:w-auto">
+                👨‍👩‍👧‍👦 التوزيع الشامل (لجميع الورثة)
+            </button>
+            <button onclick="switchTab('tab2')" id="btn-tab2" class="tab-btn inactive text-xl font-bold px-8 py-3 rounded-xl flex items-center justify-center gap-2 w-full md:w-auto">
+                เฉพาะ التوزيع الخاص (بدون إيمان والبنات)
+            </button>
+        </div>
+
+        <!-- التبويب الأول: التوزيع الشامل -->
+        <div id="tab1" class="tab-content active">
+            <!-- التأصيل -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-2xl shadow-lg p-6 border-t-4 border-blue-500">
+                    <h2 class="text-2xl font-light text-blue-800 mb-4 border-b pb-2 flex items-center gap-2">
+                        <span>1️⃣</span> المرحلة الأولى: تركة الوالد
+                    </h2>
+                    <p class="text-lg font-bold text-gray-600 mb-4 leading-relaxed">
+                        <span class="text-blue-600">التأصيل:</span> الزوجة (سهير) الثمن (12.5%). الباقي يوزع على الأبناء (محمود، مازن، محمد) والبنت (مي) للذكر مثل حظ الأنثيين.
+                    </p>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg p-6 border-t-4 border-teal-500">
+                    <h2 class="text-2xl font-light text-teal-800 mb-4 border-b pb-2 flex items-center gap-2">
+                        <span>2️⃣</span> المرحلة الثانية: تركة الابن (محمد)
+                    </h2>
+                    <p class="text-lg font-bold text-gray-600 mb-4 leading-relaxed">
+                        <span class="text-teal-600">التأصيل:</span> تركته تعادل 25% من الأصل. للأم السدس، للزوجة الثمن، للبنتين الثلثان، والباقي (1/24) للإخوة تعصيباً.
+                    </p>
+                </div>
+            </div>
+
+            <!-- جدول النتيجة الشاملة -->
+            <div class="bg-white rounded-2xl shadow-2xl p-6 mb-10 border-t-8 border-green-500">
+                <h2 class="text-3xl font-light text-center text-green-800 mb-4">🎯 النتيجة الشاملة (480 سهم)</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-center border-collapse">
+                        <thead>
+                            <tr class="bg-green-100 text-green-900 text-xl border-b-4 border-green-300">
+                                <th class="p-4 font-bold">الوارث</th>
+                                <th class="p-4 font-bold">النسبة</th>
+                                <th class="p-4 font-bold">الكسر</th>
+                                <th class="p-4 font-bold">القيمة</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-xl font-bold text-gray-800 divide-y-2 divide-gray-100" id="resultsBody"></tbody>
+                        <tfoot>
+                            <tr class="bg-gray-800 text-white text-2xl">
+                                <td colspan="3" class="p-4 font-bold">الإجمالي</td>
+                                <td class="p-4 font-bold" id="totalCheck">0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- التبويب الثاني: التوزيع المستبعد -->
+        <div id="tab2" class="tab-content">
+            <div class="bg-white rounded-2xl shadow-2xl p-6 mb-10 border-t-8 border-purple-500">
+                <h2 class="text-3xl font-light text-center text-purple-800 mb-4">
+                    ⚖️ التوزيع الخاص (بناءً على 385 سهم)
+                </h2>
+                <p class="text-xl font-bold text-center text-gray-600 mb-6">
+                    تم استبعاد الزوجة (إيمان) والبنات، وإعادة توزيع متبقي الأسهم بشكل نسبي على الورثة المتبقين.
+                </p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-center border-collapse">
+                        <thead>
+                            <tr class="bg-purple-100 text-purple-900 text-xl border-b-4 border-purple-300">
+                                <th class="p-4 font-bold">الوارث</th>
+                                <th class="p-4 font-bold">النسبة المئوية</th>
+                                <th class="p-4 font-bold">الأسهم (من 385)</th>
+                                <th class="p-4 font-bold">القيمة</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-xl font-bold text-gray-800 divide-y-2 divide-gray-100" id="resultsBodyExcluded"></tbody>
+                        <tfoot>
+                            <tr class="bg-gray-800 text-white text-2xl">
+                                <td colspan="3" class="p-4 font-bold">الإجمالي</td>
+                                <td class="p-4 font-bold" id="totalCheckExcluded">0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- الفوتر -->
+    <footer class="dr-footer bg-animated-footer">
+        All rights are reserved to Dr. Mazen Badawy – Doctor of English Teaching & Testing © 2026
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // دالة التبديل بين التبويبات
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('inactive');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('btn-' + tabId).classList.remove('inactive');
+            document.getElementById('btn-' + tabId).classList.add('active');
+        }
+
+        // بيانات التوزيع الشامل (480 سهم)
+        const heirs = [
+            { name: "ماما (سهير)", fraction: 80 / 480, stringFraction: "80 / 480", color: "text-blue-700" },
+            { name: "إيمان (زوجة محمد)", fraction: 15 / 480, stringFraction: "15 / 480", color: "text-pink-600" },
+            { name: "آية (ابنة محمد)", fraction: 40 / 480, stringFraction: "40 / 480", color: "text-purple-600" },
+            { name: "دنيا (ابنة محمد)", fraction: 40 / 480, stringFraction: "40 / 480", color: "text-purple-600" },
+            { name: "محمود", fraction: 122 / 480, stringFraction: "122 / 480", color: "text-teal-700" },
+            { name: "مازن", fraction: 122 / 480, stringFraction: "122 / 480", color: "text-teal-700" },
+            { name: "مي", fraction: 61 / 480, stringFraction: "61 / 480", color: "text-indigo-600" }
+        ];
+
+        // بيانات التوزيع الخاص (إجمالي الأسهم المتبقية = 385)
+        const heirsExcluded = [
+            { name: "ماما (سهير)", fraction: 80 / 385, stringFraction: "80 سهم", color: "text-blue-700" },
+            { name: "محمود", fraction: 122 / 385, stringFraction: "122 سهم", color: "text-teal-700" },
+            { name: "مازن", fraction: 122 / 385, stringFraction: "122 سهم", color: "text-teal-700" },
+            { name: "مي", fraction: 61 / 385, stringFraction: "61 سهم", color: "text-indigo-600" }
+        ];
+
+        function calculateShares() {
+            const totalValue = parseFloat(document.getElementById('estateValue').value) || 0;
+            const formatter = new Intl.NumberFormat('ar-EG', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            
+            // 1. حساب التوزيع الشامل
+            const body1 = document.getElementById('resultsBody');
+            body1.innerHTML = '';
+            let sum1 = 0;
+            heirs.forEach(heir => {
+                const val = totalValue * heir.fraction;
+                sum1 += val;
+                body1.innerHTML += `
+                    <tr class="hover:bg-green-50">
+                        <td class="p-4 ${heir.color}">${heir.name}</td>
+                        <td class="p-4 text-gray-600" dir="ltr">${(heir.fraction * 100).toFixed(3)}%</td>
+                        <td class="p-4 text-gray-500" dir="ltr">${heir.stringFraction}</td>
+                        <td class="p-4 text-green-700 bg-green-50 font-bold">${formatter.format(val)}</td>
+                    </tr>`;
+            });
+            document.getElementById('totalCheck').innerText = formatter.format(sum1);
+
+            // 2. حساب التوزيع الخاص
+            const body2 = document.getElementById('resultsBodyExcluded');
+            body2.innerHTML = '';
+            let sum2 = 0;
+            heirsExcluded.forEach(heir => {
+                const val = totalValue * heir.fraction;
+                sum2 += val;
+                body2.innerHTML += `
+                    <tr class="hover:bg-purple-50">
+                        <td class="p-4 ${heir.color}">${heir.name}</td>
+                        <td class="p-4 text-gray-600" dir="ltr">${(heir.fraction * 100).toFixed(3)}%</td>
+                        <td class="p-4 text-gray-500">${heir.stringFraction}</td>
+                        <td class="p-4 text-purple-700 bg-purple-50 font-bold">${formatter.format(val)}</td>
+                    </tr>`;
+            });
+            document.getElementById('totalCheckExcluded').innerText = formatter.format(sum2);
+        }
+
+        window.onload = calculateShares;
+    </script>
+</body>
+</html>
