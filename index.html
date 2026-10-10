@@ -714,8 +714,11 @@
             let feddanPriceInput = document.getElementById('feddanPrice');
             let feddanPrice = parseFloat(feddanPriceInput.value) || 37;
 
-            // المساحة الكلية = 27 فدان (عقد 1: 21.651 فدان، عقد 2: 5.349 فدان)
-            const totalFeddans = 27;
+            // مساحة العقد الأول: 21 فدان + 15 قيراط + 15 سهم = 21.6510416667 فدان
+            const area1 = 21 + (15 / 24) + (15 / 576);
+            // مساحة العقد الثاني: 5 أفدنة + 8 قراريط + 9 أسهم = 5.3489583333 فدان
+            const area2 = 5 + (8 / 24) + (9 / 576);
+            const totalFeddans = area1 + area2; // 27 فدان تماماً
 
             if (source === 'feddan') {
                 totalValue = Math.round(feddanPrice * totalFeddans);
@@ -733,10 +736,10 @@
             const dateEnd = document.getElementById('dateEnd').value || "2028/4/10م";
             const penalty = parseFloat(document.getElementById('penaltyValue').value) || 100000;
 
-            // نصيب العقد الأول (385 من 480) -> 802 جنيه عند التركة 1000
-            const c1Rent = Math.round(totalValue * (385 / 480));
-            // نصيب العقد الثاني (95 من 480) -> 198 جنيه عند التركة 1000
-            const c2Rent = Math.round(totalValue * (95 / 480));
+            // حساب الإيجار الإجمالي لكل عقد بضرب سعر الفدان في المساحة الدقيقة للعقد
+            const exactRate = (source === 'feddan') ? feddanPrice : (totalValue / totalFeddans);
+            const c1Rent = Math.round(exactRate * area1);
+            const c2Rent = Math.round(exactRate * area2);
 
             // الأرقام المنسقة بدون الفاصلة الآلاف
             document.querySelectorAll('.c-feddanPrice').forEach(el => el.innerText = feddanPrice.toLocaleString('ar-EG', { useGrouping: false }));
