@@ -109,21 +109,21 @@
                 break-after: page;
                 font-family: Arial, sans-serif !important;
                 font-weight: 700 !important;
-                font-size: 10pt !important;
-                line-height: 1.38 !important;
+                font-size: var(--contract-font-size, 10pt) !important;
+                line-height: var(--contract-line-height, 1.4) !important;
             }
             .contract-paper:last-child {
                 page-break-after: auto;
                 break-after: auto;
             }
             .contract-paper h2 {
-                font-size: 15pt !important;
+                font-size: calc(var(--contract-font-size, 10pt) + 5pt) !important;
                 margin-bottom: 3px !important;
             }
             .contract-paper p, .contract-paper li {
-                font-size: 9.8pt !important;
+                font-size: var(--contract-font-size, 10pt) !important;
                 margin-bottom: 3px !important;
-                line-height: 1.38 !important;
+                line-height: var(--contract-line-height, 1.4) !important;
             }
             .contract-paper .space-y-3 > :not([hidden]) ~ :not([hidden]),
             .contract-paper .space-y-2 > :not([hidden]) ~ :not([hidden]),
@@ -140,7 +140,7 @@
                 padding-top: 0.3rem !important;
             }
             .contract-paper table {
-                font-size: calc(var(--contract-font-size, 9.8pt) - 1pt) !important;
+                font-size: calc(var(--contract-font-size, 10pt) - 1pt) !important;
             }
             .contract-paper table th, .contract-paper table td {
                 padding: 4px 6px !important;
