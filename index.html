@@ -710,9 +710,9 @@
 
         // تحديث قيم العقود والتفقيط تلقائياً
         function updateContracts(source = 'estate') {
-            let totalValue = parseFloat(document.getElementById('estateValue').value) || 1000;
+            let totalValue = parseFloat(document.getElementById('estateValue').value) || 0;
             let feddanPriceInput = document.getElementById('feddanPrice');
-            let feddanPrice = parseFloat(feddanPriceInput.value) || 37;
+            let feddanPrice = parseFloat(feddanPriceInput.value) || 0;
 
             // مساحة العقد الأول: 21 فدان + 15 قيراط + 15 سهم = 21.6510416667 فدان
             const area1 = 21 + (15 / 24) + (15 / 576);
@@ -720,13 +720,20 @@
             const area2 = 5 + (8 / 24) + (9 / 576);
             const totalFeddans = area1 + area2; // 27 فدان تماماً
 
+            let rate = 0;
             if (source === 'feddan') {
-                totalValue = Math.round(feddanPrice * totalFeddans);
+                rate = feddanPrice;
+                totalValue = Math.round(rate * totalFeddans);
                 document.getElementById('estateValue').value = totalValue;
             } else {
-                feddanPrice = Math.round(totalValue / totalFeddans);
-                feddanPriceInput.value = feddanPrice;
+                rate = totalValue / totalFeddans;
+                feddanPriceInput.value = Math.round(rate);
+                feddanPrice = Math.round(rate);
             }
+
+            // حساب الإيجار الإجمالي لكل عقد بضرب سعر الفدان في المساحة الدقيقة لكل عقد
+            const c1Rent = Math.round(rate * area1);
+            const c2Rent = Math.round(rate * area2);
 
             const lesseeName = document.getElementById('lesseeName').value || "جمال فتحي يوسف بسيوني";
             const lesseeId = document.getElementById('lesseeId').value || "26712251500159";
@@ -735,11 +742,6 @@
             const date2 = document.getElementById('date2').value || "2027/10/10م";
             const dateEnd = document.getElementById('dateEnd').value || "2028/4/10م";
             const penalty = parseFloat(document.getElementById('penaltyValue').value) || 100000;
-
-            // حساب الإيجار الإجمالي لكل عقد بضرب سعر الفدان في المساحة الدقيقة للعقد
-            const exactRate = (source === 'feddan') ? feddanPrice : (totalValue / totalFeddans);
-            const c1Rent = Math.round(exactRate * area1);
-            const c2Rent = Math.round(exactRate * area2);
 
             // الأرقام المنسقة بدون الفاصلة الآلاف
             document.querySelectorAll('.c-feddanPrice').forEach(el => el.innerText = feddanPrice.toLocaleString('ar-EG', { useGrouping: false }));
@@ -800,6 +802,7 @@
         window.onload = function() {
             calculateShares();
             adjustContractFormatting();
+            updateContracts('estate');
         };
     </script>
 </body>
