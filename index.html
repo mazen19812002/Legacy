@@ -705,7 +705,99 @@
             const totalValue = parseFloat(document.getElementById('estateValue').value) || 0;
             const formatter = new Intl.NumberFormat('ar-EG', { style: 'decimal', useGrouping: false, minimumFractionDigits: 2, maximumFractionDigits: 2 });
             
-            // ... existing calculation code ...
+            // 1. حساب التوزيع الشامل بالمجموعات الفرعية
+            const body1 = document.getElementById('resultsBody');
+            body1.innerHTML = '';
+            
+            let group1ValueSum = 0;
+            let group1FractionSum = 0;
+
+            // رأس المجموعة الأولى
+            body1.innerHTML += `
+                <tr class="bg-blue-100 text-blue-900 border-b-2 border-blue-200 text-right font-bold">
+                    <td colspan="4" class="p-3 font-bold text-xl text-blue-900">
+                        🔹 الجزء الأول: ماما (سهير) ومحمود ومازن ومي (385 سهم من 480)
+                    </td>
+                </tr>`;
+
+            group1Heirs.forEach(heir => {
+                const val = totalValue * heir.fraction;
+                group1ValueSum += val;
+                group1FractionSum += heir.fraction;
+                body1.innerHTML += `
+                    <tr class="hover:bg-blue-50 font-bold">
+                        <td class="p-4 ${heir.color} pr-8 text-right">${heir.name}</td>
+                        <td class="p-4 text-gray-600" dir="ltr">${(heir.fraction * 100).toFixed(3)}%</td>
+                        <td class="p-4 text-gray-500" dir="ltr">${heir.stringFraction}</td>
+                        <td class="p-4 text-blue-800 bg-blue-50/50 font-bold">${formatter.format(val)}</td>
+                    </tr>`;
+            });
+
+            // إجمالي الجزء الأول
+            body1.innerHTML += `
+                <tr class="bg-blue-200/80 text-blue-950 font-bold border-b-4 border-blue-300">
+                    <td class="p-3 text-right pr-6">إجمالي جزء (ماما ومحمود ومازن ومي)</td>
+                    <td class="p-3" dir="ltr">${(group1FractionSum * 100).toFixed(3)}%</td>
+                    <td class="p-3" dir="ltr">385 / 480</td>
+                    <td class="p-3 text-blue-950 underline font-black text-2xl">${formatter.format(group1ValueSum)}</td>
+                </tr>`;
+
+            let group2ValueSum = 0;
+            let group2FractionSum = 0;
+
+            // رأس المجموعة الثانية
+            body1.innerHTML += `
+                <tr class="bg-pink-100 text-pink-900 border-b-2 border-pink-200 text-right font-bold">
+                    <td colspan="4" class="p-3 font-bold text-xl text-pink-900">
+                        🔹 الجزء الثاني: زوجة محمد (إيمان) والبنتين (آية ودنيا) (95 سهم من 480)
+                    </td>
+                </tr>`;
+
+            group2Heirs.forEach(heir => {
+                const val = totalValue * heir.fraction;
+                group2ValueSum += val;
+                group2FractionSum += heir.fraction;
+                body1.innerHTML += `
+                    <tr class="hover:bg-pink-50 font-bold">
+                        <td class="p-4 ${heir.color} pr-8 text-right">${heir.name}</td>
+                        <td class="p-4 text-gray-600" dir="ltr">${(heir.fraction * 100).toFixed(3)}%</td>
+                        <td class="p-4 text-gray-500" dir="ltr">${heir.stringFraction}</td>
+                        <td class="p-4 text-pink-800 bg-pink-50/50 font-bold">${formatter.format(val)}</td>
+                    </tr>`;
+            });
+
+            // إجمالي الجزء الثاني
+            body1.innerHTML += `
+                <tr class="bg-pink-200/80 text-pink-950 font-bold border-b-4 border-pink-300">
+                    <td class="p-3 text-right pr-6">إجمالي جزء (زوجة محمد والبنتين)</td>
+                    <td class="p-3" dir="ltr">${(group2FractionSum * 100).toFixed(3)}%</td>
+                    <td class="p-3" dir="ltr">95 / 480</td>
+                    <td class="p-3 text-pink-950 underline font-black text-2xl">${formatter.format(group2ValueSum)}</td>
+                </tr>`;
+
+            // الإجمالي الكلي
+            const totalSum = group1ValueSum + group2ValueSum;
+            document.getElementById('totalCheck').innerText = formatter.format(totalSum);
+
+            // 2. حساب التوزيع الخاص
+            const body2 = document.getElementById('resultsBodyExcluded');
+            body2.innerHTML = '';
+            let sum2 = 0;
+            heirsExcluded.forEach(heir => {
+                const val = totalValue * heir.fraction;
+                sum2 += val;
+                body2.innerHTML += `
+                    <tr class="hover:bg-purple-50 font-bold">
+                        <td class="p-4 ${heir.color}">${heir.name}</td>
+                        <td class="p-4 text-gray-600" dir="ltr">${(heir.fraction * 100).toFixed(3)}%</td>
+                        <td class="p-4 text-gray-500">${heir.stringFraction}</td>
+                        <td class="p-4 text-purple-700 bg-purple-50 font-bold">${formatter.format(val)}</td>
+                    </tr>`;
+            });
+            document.getElementById('totalCheckExcluded').innerText = formatter.format(sum2);
+
+            // تحديث التقييد والعقود تلقائياً
+            updateContracts('estate');
         }
 
         // تحديث قيم العقود والتفقيط تلقائياً
