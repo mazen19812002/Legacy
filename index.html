@@ -178,6 +178,11 @@
             font-size: var(--contract-font-size, 10pt);
             line-height: var(--contract-line-height, 1.4);
         }
+
+        /* ترقيم القوائم داخل العقود بالأرقام العربية الهندية */
+        .contract-paper ol {
+            list-style-type: arabic-indic !important;
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -800,6 +805,22 @@
             updateContracts('estate');
         }
 
+        // تحويل جميع الأرقام والتواريخ داخل العقدين إلى الأرقام العربية الهندية (٠١٢٣٤٥٦٧٨٩)
+        function toArabicIndicDigits() {
+            const map = { '0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩' };
+            ['contract1', 'contract2'].forEach(id => {
+                const root = document.getElementById(id);
+                if (!root) return;
+                const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+                let node;
+                while ((node = walker.nextNode())) {
+                    if (/[0-9]/.test(node.nodeValue)) {
+                        node.nodeValue = node.nodeValue.replace(/[0-9]/g, d => map[d]);
+                    }
+                }
+            });
+        }
+
         // تحديث قيم العقود والتفقيط تلقائياً
         function updateContracts(source = 'estate') {
             let totalValue = parseFloat(document.getElementById('estateValue').value) || 0;
@@ -853,6 +874,9 @@
             document.querySelectorAll('.c-penaltyText').forEach(el => el.innerText = tafqeetPoundsOnly(penalty));
             document.querySelectorAll('.c1-totalRentText').forEach(el => el.innerText = tafqeetCurrency(c1Rent));
             document.querySelectorAll('.c2-totalRentText').forEach(el => el.innerText = tafqeetCurrency(c2Rent));
+
+            // تحويل كل الأرقام والتواريخ في العقود إلى الأرقام الهندية
+            toArabicIndicDigits();
         }
 
         // دالة التحكم في تنسيق الخط والمسافات
